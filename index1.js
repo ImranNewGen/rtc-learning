@@ -4,7 +4,6 @@ import RTCMultiConnection from './RTCMultiConnection.js';
 
 const connection = new RTCMultiConnection();
 connection.socketURL = 'https://young-ridge-01369.herokuapp.com/';
-connection.socketMessageEvent = 'say';
 connection.autoCloseEntireSession = true;
 connection.session = {
     data: true
@@ -44,9 +43,7 @@ function Main() {
             }
         });
 
-        connection.onUserStatusChanged = function(event) {
-            // console.log("-----------------------------");
-            // console.log(connection.getAllParticipants());
+        connection.onUserStatusChanged = function (event) {
             setUserlist(connection.getAllParticipants());
         };
 
@@ -74,9 +71,11 @@ function Main() {
         /*connection.getAllParticipants().forEach(function(pid) {
             connection.disconnectWith(pid);
         });*/
-        connection.changeUserId(particularUser, function() {
+       /* connection.changeUserId(particularUser, function() {
            console.log('Your userid is successfully changed to: ' + connection.userid);
-        });
+        });*/
+        connection.send(sendingMessage, particularUser);
+
     };
 
     return <div>
@@ -86,7 +85,7 @@ function Main() {
         {!initator && <p style={{color: "green"}}>Student</p>}
 
         <input type="text" name={"messageFld"} onChange={(e) => setSendingMessage(e.target.value)}/>
-        <button onClick={sendMessage}>Send Message</button><br/><br/><br/>
+        <button onClick={sendMessage}>Send Message to All</button><br/><br/><br/>
 
         <input type="text" name={"particularUser"} onChange={(e) => setParticularUser(e.target.value)}/>
         <button onClick={sendParticularUser}>Send Particular User</button><br/>
@@ -98,6 +97,7 @@ function Main() {
                 <li key={i}>{item.sender} ==> {item.message}</li>
             ))}
         </ul>
+
         <p>User List:</p>
         <ul>
             {userlist.map((item, i) => (
