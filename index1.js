@@ -4,7 +4,7 @@ import RTCMultiConnection from './RTCMultiConnection.js';
 
 const connection = new RTCMultiConnection();
 connection.socketURL = 'https://young-ridge-01369.herokuapp.com/';
-connection.socketMessageEvent = 'video-conference-demo';
+connection.socketMessageEvent = 'say';
 connection.autoCloseEntireSession = true;
 connection.session = {
     data: true
@@ -50,13 +50,15 @@ function Main() {
             setUserlist(connection.getAllParticipants());
         };
 
-        connection.onNewParticipant = function(participantId, userPreferences) {
-            let messa = participantId + ' is trying to join your room. Confirm to accept his request.';
-            if( window.confirm(messa ) ) {
-                // connection.addParticipationRequest(participantId, userPreferences);
-                connection.acceptParticipationRequest(participantId, userPreferences);
+        /*connection.onNewParticipant = function(participantId, userPreferences) {
+            if (connection.isInitiator === true) {
+                let messa = participantId + ' is trying to join your room. Confirm to accept his request.';
+                if( window.confirm(messa ) ) {
+                    // connection.addParticipationRequest(participantId, userPreferences);
+                    connection.acceptParticipationRequest(participantId, userPreferences);
+                }
             }
-        };
+        };*/
 
     }, []);
 
@@ -66,9 +68,16 @@ function Main() {
         connection.send(sendingMessage);
     };
 
-    /*const sendParticularUser = (e) => {
-        var peerContainer = connection.peers[particularUser];
-    };*/
+    const sendParticularUser = (e) => {
+        // var peerContainer = connection.peers[particularUser];
+        // connection.disconnectWith(particularUser);
+        /*connection.getAllParticipants().forEach(function(pid) {
+            connection.disconnectWith(pid);
+        });*/
+        connection.changeUserId(particularUser, function() {
+           console.log('Your userid is successfully changed to: ' + connection.userid);
+        });
+    };
 
     return <div>
         <p style={headerStyle}>Username: {userid}</p>
@@ -79,8 +88,8 @@ function Main() {
         <input type="text" name={"messageFld"} onChange={(e) => setSendingMessage(e.target.value)}/>
         <button onClick={sendMessage}>Send Message</button><br/><br/><br/>
 
-        {/*<input type="text" name={"particularUser"} onChange={(e) => setParticularUser(e.target.value)}/>
-        <button onClick={sendParticularUser}>Send Particular User</button><br/>*/}
+        <input type="text" name={"particularUser"} onChange={(e) => setParticularUser(e.target.value)}/>
+        <button onClick={sendParticularUser}>Send Particular User</button><br/>
 
 
         <p>Message:</p>
