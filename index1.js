@@ -87,7 +87,6 @@ function Main() {
     const sendToUser = (e) => {
         if (Array.isArray(particularUser) && particularUser.length) {
             particularUser.forEach(pu => {
-                console.log(pu);
                 connection.send(sendingMessage, pu.value);
             });
         } else {
@@ -112,18 +111,17 @@ function Main() {
         <button onClick={sendToUser}>Send</button>
         <br/>
 
+        <p>User List:</p>
+        <ul>
+            {userlist.map((item, i) => (
+                <li key={i}>{item.name}[{item.hisUID}] : {moment(item.joinedAt).fromNow()}</li>
+            ))}
+        </ul>
 
         <p>Message:</p>
         <ul>
             {message.map((item, i) => (
                 <li key={i}>{item.sender} ==> {item.message}</li>
-            ))}
-        </ul>
-
-        <p>User List:</p>
-        <ul>
-            {userlist.map((item, i) => (
-                <li key={i}>{item.name}[{item.hisUID}] : {moment(item.joinedAt).fromNow()}</li>
             ))}
         </ul>
 
