@@ -28,6 +28,7 @@ target/
 build/
 node_modules/
 .cache/
+.idea/
 
 ### VS Code ###
 .vscode/

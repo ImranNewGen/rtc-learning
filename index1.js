@@ -1,10 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import RTCMultiConnection from './RTCMultiConnection.js';
+import Helmet from "react-helmet";
 
 const connection = new RTCMultiConnection();
 connection.socketURL = 'https://young-ridge-01369.herokuapp.com/';
 connection.autoCloseEntireSession = true;
+connection.enableLogs = false;
 connection.session = {
     data: true
 };
@@ -105,7 +107,9 @@ function Main() {
             ))}
         </ul>
 
-
+        <Helmet>
+            <title>{userid}</title>
+        </Helmet>
     </div>;
 }
 
