@@ -2,6 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import RTCMultiConnection from './RTCMultiConnection.js';
 import Helmet from "react-helmet";
+import moment from "moment";
+import Select from "react-select";
 
 const connection = new RTCMultiConnection();
 connection.socketURL = 'https://young-ridge-01369.herokuapp.com/';
@@ -9,6 +11,10 @@ connection.autoCloseEntireSession = true;
 connection.enableLogs = false;
 connection.session = {
     data: true
+};
+connection.extra = {
+    joinedAt: moment().format(),
+    name: prompt("Enter Name")
 };
 
 function Main() {
@@ -18,22 +24,20 @@ function Main() {
     const [message, setMessage] = React.useState([]);
     const [sendingMessage, setSendingMessage] = React.useState();
     const [initator, setInitator] = React.useState(false);
+
+    const [options, setOptions] = React.useState([]);
     const [userlist, setUserlist] = React.useState([]);
 
     React.useEffect(() => {
 
         connection.onopen = event => {
-            setUserid(connection.userid);
-            // console.log('===>Open: ' + connection.userid);
+            setUserid(connection.extra.name + ' [' + connection.userid + ']');
         };
 
         connection.onmessage = event => {
-            // console.log('===>Message');
-            // console.log(event.userid + ' said: ' + event.data);
-            // setMessage(event.userid + ' said: ' + event.data);
             setMessage(message => [...message, {
                 message: event.data,
-                sender: event.userid
+                sender: event.extra.name + ' [' + event.userid + ']'
             }]);
         };
 
@@ -46,7 +50,23 @@ function Main() {
         });
 
         connection.onUserStatusChanged = function (event) {
-            setUserlist(connection.getAllParticipants());
+            let users = connection.getAllParticipants().map(participantId => {
+                let user = connection.peers[participantId];
+                let joinedAt = user.extra.joinedAt;
+                let name = user.extra.name;
+                let hisUID = user.userid;
+                let hisNativePeer = user.peer;
+                let hisIncomingStreams = user.peer.getRemoteStreams();
+                let hisDataChannels = user.channels;
+                return {joinedAt,hisUID,hisNativePeer,hisIncomingStreams, hisDataChannels, name};
+            });
+            setUserlist(users);
+            let a = users.map(m => ({
+                value: m.hisUID,
+                label: m.name
+            }));
+
+            setOptions(a);
         };
 
         /*connection.onNewParticipant = function(participantId, userPreferences) {
@@ -59,25 +79,24 @@ function Main() {
             }
         };*/
 
+
     }, []);
 
     const headerStyle = {backgroundColor: "indigo", fontFamily: "Arial", padding: "10px", color: "white"};
 
-    const sendMessage = (e) => {
-        connection.send(sendingMessage);
+    const sendToUser = (e) => {
+        if (Array.isArray(particularUser) && particularUser.length) {
+            particularUser.forEach(pu => {
+                console.log(pu);
+                connection.send(sendingMessage, pu.value);
+            });
+        } else {
+            connection.send(sendingMessage);
+        }
     };
 
-    const sendParticularUser = (e) => {
-        // var peerContainer = connection.peers[particularUser];
-        // connection.disconnectWith(particularUser);
-        /*connection.getAllParticipants().forEach(function(pid) {
-            connection.disconnectWith(pid);
-        });*/
-       /* connection.changeUserId(particularUser, function() {
-           console.log('Your userid is successfully changed to: ' + connection.userid);
-        });*/
-        connection.send(sendingMessage, particularUser);
-
+    const handleChange = (values) => {
+        setParticularUser(values);
     };
 
     return <div>
@@ -86,11 +105,12 @@ function Main() {
         {initator && <p style={{color: "DarkRed"}}>Teacher</p>}
         {!initator && <p style={{color: "green"}}>Student</p>}
 
-        <input type="text" name={"messageFld"} onChange={(e) => setSendingMessage(e.target.value)}/>
-        <button onClick={sendMessage}>Send Message to All</button><br/><br/><br/>
-
-        <input type="text" name={"particularUser"} onChange={(e) => setParticularUser(e.target.value)}/>
-        <button onClick={sendParticularUser}>Send Particular User</button><br/>
+        <input type="text" name="sendingMessage" onChange={(e) => setSendingMessage(e.target.value)}/><br/><br/>
+        <div style={{width:"40%"}}>
+            <Select onChange={handleChange} isMulti options={options}/>
+        </div><br/><br/>
+        <button onClick={sendToUser}>Send</button>
+        <br/>
 
 
         <p>Message:</p>
@@ -103,7 +123,7 @@ function Main() {
         <p>User List:</p>
         <ul>
             {userlist.map((item, i) => (
-                <li key={i}>{item}</li>
+                <li key={i}>{item.name}[{item.hisUID}] : {moment(item.joinedAt).fromNow()}</li>
             ))}
         </ul>
 
