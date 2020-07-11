@@ -7,17 +7,24 @@ import Select from "react-select";
 
 const connection = new RTCMultiConnection();
 connection.socketURL = 'https://young-ridge-01369.herokuapp.com/';
-connection.autoCloseEntireSession = true;
+// connection.autoCloseEntireSession = true;
 connection.enableLogs = false;
 connection.session = {
     data: true
 };
+connection.sdpConstraints.mandatory = {
+    OfferToReceiveAudio: true,
+    OfferToReceiveVideo: true
+};
+
 connection.extra = {
     joinedAt: moment().format(),
     name: prompt("Enter Name")
 };
 
 function Main() {
+
+    console.log(123);
 
     const [userid, setUserid] = React.useState();
     const [particularUser, setParticularUser] = React.useState();
@@ -28,14 +35,16 @@ function Main() {
     const [options, setOptions] = React.useState([]);
     const [userlist, setUserlist] = React.useState([]);
 
+    const [peerSreamId, setPeerSreamId] = React.useState();
+
     React.useEffect(() => {
+        console.log(456);
 
         connection.onopen = event => {
             setUserid(connection.extra.name + ' [' + connection.userid + ']');
         };
 
         connection.onmessage = event => {
-            console.log(connection.sessionid);
             setMessage(message => [...message, {
                 message: event.data,
                 sender: event.extra.name + ' [' + event.userid + ']'
@@ -70,33 +79,62 @@ function Main() {
             setOptions(a);
         };
 
-        /*connection.onNewParticipant = function(participantId, userPreferences) {
-            if (connection.isInitiator === true) {
-                let messa = participantId + ' is trying to join your room. Confirm to accept his request.';
-                if( window.confirm(messa ) ) {
-                    // connection.addParticipationRequest(participantId, userPreferences);
-                    connection.acceptParticipationRequest(participantId, userPreferences);
-                }
-            }
-        };*/
-
+       
 
     }, []);
 
-    const headerStyle = {backgroundColor: "indigo", fontFamily: "Arial", padding: "10px", color: "white"};
+    const headerStyle = {backgroundColor: "rgb(66,22,6)", fontFamily: "Arial", padding: "10px", color: "white"};
 
     const sendToUser = (e) => {
-        if (Array.isArray(particularUser) && particularUser.length) {
-            particularUser.forEach(pu => {
-                connection.send(sendingMessage, pu.value);
-            });
-        } else {
-            connection.send(sendingMessage);
-        }
+   
+        var peerStreams = [];
+
+        Object.keys(connection.streamEvents).forEach(function(streamid) {
+            var event = connection.streamEvents[streamid];
+            
+            if (event.userid === particularUser[0].value) {
+                peerStreams.push(event.mediaElement);
+            }
+        });
+       
+        
+        if (Array.isArray(peerStreams) && peerStreams.length) {
+           console.log(peerStreams[0]);
+           document.body.appendChild( peerStreams[0]);
+           setPeerSreamId(peerStreams[0].id);
+        }else{
+            alert('Not Found');
+        }  
+
+
     };
 
     const handleChange = (values) => {
         setParticularUser(values);
+    };
+
+    const call = (values) => {
+       connection.peers[particularUser[0].value].addStream({
+            audio: false,
+            video: true,
+            streamCallback: function(stream) {
+                console.log('Screen is successfully captured: ' + stream.getVideoTracks().length);
+            }
+        });
+    };
+
+    const stop = (values) => {
+        var existing = document.getElementById(peerSreamId);
+        if(existing && existing.parentNode) {
+          existing.parentNode.removeChild(existing);
+        }
+    };
+
+    connection.onstream = function(event) {
+        // console.log(event);
+        // var video = document.createElement('video');
+        // video.srcObject = event.stream;
+        // document.body.appendChild( event.mediaElement );
     };
 
     return <div>
@@ -110,6 +148,10 @@ function Main() {
             <Select onChange={handleChange} isMulti options={options}/>
         </div><br/><br/>
         <button onClick={sendToUser}>Send</button>
+        <br/><br/>
+
+        <button onClick={call}>Call</button>
+        <button onClick={stop}>Stop</button>
         <br/>
 
         <p>User List:</p>
