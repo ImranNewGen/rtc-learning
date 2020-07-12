@@ -24,8 +24,6 @@ connection.extra = {
 
 function Main() {
 
-    console.log(123);
-
     const [userid, setUserid] = React.useState();
     const [particularUser, setParticularUser] = React.useState();
     const [message, setMessage] = React.useState([]);
@@ -38,7 +36,6 @@ function Main() {
     const [peerSreamId, setPeerSreamId] = React.useState();
 
     React.useEffect(() => {
-        console.log(456);
 
         connection.onopen = event => {
             setUserid(connection.extra.name + ' [' + connection.userid + ']');
@@ -93,18 +90,20 @@ function Main() {
             var event = connection.streamEvents[streamid];
             
             if (event.userid === particularUser[0].value) {
-                peerStreams.push(event.mediaElement);
+                peerStreams.push(event);
             }
         });
        
         
         if (Array.isArray(peerStreams) && peerStreams.length) {
            console.log(peerStreams[0]);
-           document.body.appendChild( peerStreams[0]);
-           setPeerSreamId(peerStreams[0].id);
+           console.log("Unmuting")
+            peerStreams[0].stream.unmute();
+           document.body.appendChild( peerStreams[0].mediaElement);
+           // setPeerSreamId(peerStreams[0].id);
         }else{
             alert('Not Found');
-        }  
+        }
 
 
     };
@@ -114,8 +113,15 @@ function Main() {
     };
 
     const call = (values) => {
-       connection.peers[particularUser[0].value].addStream({
+       /*connection.peers[particularUser[0].value].addStream({
             audio: false,
+            video: true,
+            streamCallback: function(stream) {
+                console.log('Screen is successfully captured: ' + stream.getVideoTracks().length);
+            }
+        });*/
+        connection.addStream({
+            audio: true,
             video: true,
             streamCallback: function(stream) {
                 console.log('Screen is successfully captured: ' + stream.getVideoTracks().length);
@@ -124,17 +130,72 @@ function Main() {
     };
 
     const stop = (values) => {
-        var existing = document.getElementById(peerSreamId);
+        /*let existing = document.getElementById(peerSreamId);
         if(existing && existing.parentNode) {
           existing.parentNode.removeChild(existing);
-        }
+        }*/
+        connection.attachStreams.forEach(function(stream) {
+            console.log(stream.id);
+            stream.getTracks().forEach(track => {
+                track.stop();
+            });
+        });
     };
 
     connection.onstream = function(event) {
-        // console.log(event);
-        // var video = document.createElement('video');
-        // video.srcObject = event.stream;
-        // document.body.appendChild( event.mediaElement );
+        /*let existing = document.getElementById(event.streamid);
+        if(existing && existing.parentNode) {
+            existing.parentNode.removeChild(existing);
+        }
+
+        event.mediaElement.removeAttribute('src');
+        event.mediaElement.removeAttribute('srcObject');
+        event.mediaElement.muted = true;
+        event.mediaElement.volume = 0;
+
+        let video = document.createElement('video');
+
+        try {
+            video.setAttributeNode(document.createAttribute('autoplay'));
+            video.setAttributeNode(document.createAttribute('playsinline'));
+        } catch (e) {
+            video.setAttribute('autoplay', true);
+            video.setAttribute('playsinline', true);
+        }
+
+        if(event.type === 'local'){
+            video.volume = 0;
+            try {
+                video.setAttributeNode(document.createAttribute('muted'));
+            } catch (e) {
+                video.setAttribute('muted', true);
+            }
+        }
+        video.srcObject = event.stream;*/
+        console.log(event.type);
+
+        if(event.type === 'local') {
+            /*console.log(event.type);
+            console.log("XXXXXXXXXXXxx")
+            Object.keys(connection.streamEvents).forEach(function (streamid) {
+                let event = connection.streamEvents[streamid];
+                console.log(event.stream);
+
+            });*/
+        }
+
+        if (event.type === 'remote') {
+
+            Object.keys(connection.streamEvents).forEach(function (streamid) {
+                let event = connection.streamEvents[streamid];
+                if (event && event.stream) {
+                    event.stream.mute();
+                    console.log("Muted");
+                };
+
+            });
+        }
+
     };
 
     return <div>
@@ -147,10 +208,10 @@ function Main() {
         <div style={{width:"40%"}}>
             <Select onChange={handleChange} isMulti options={options}/>
         </div><br/><br/>
-        <button onClick={sendToUser}>Send</button>
+        <button onClick={sendToUser}>View</button>
         <br/><br/>
 
-        <button onClick={call}>Call</button>
+        <button onClick={call}>Call</button><br/><br/>
         <button onClick={stop}>Stop</button>
         <br/>
 
