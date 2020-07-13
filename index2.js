@@ -10,7 +10,9 @@ connection.socketURL = 'https://young-ridge-01369.herokuapp.com/';
 // connection.autoCloseEntireSession = true;
 connection.enableLogs = false;
 connection.session = {
-    data: true
+    data: true,
+    audio: true,
+    video: true
 };
 connection.sdpConstraints.mandatory = {
     OfferToReceiveAudio: true,
@@ -83,43 +85,34 @@ function Main() {
     const headerStyle = {backgroundColor: "rgb(66,22,6)", fontFamily: "Arial", padding: "10px", color: "white"};
 
     const sendToUser = (e) => {
-   
-        var peerStreams = [];
+        // viewPeer(particularUser[0].value);
+        let streamByUserId = connection.streamEvents.selectFirst({userid: particularUser[0].value}).stream;
+        let existing = document.getElementById(streamByUserId.streamid);
+        if(existing && existing.parentNode) {
+            existing.parentNode.removeChild(existing);
+        }
 
-        Object.keys(connection.streamEvents).forEach(function(streamid) {
-            var event = connection.streamEvents[streamid];
-            
-            if (event.userid === particularUser[0].value) {
-                peerStreams.push(event);
-            }
-        });
-       
-        
-        if (Array.isArray(peerStreams) && peerStreams.length) {
-           console.log(peerStreams[0]);
-           console.log("Unmuting")
-            peerStreams[0].stream.unmute();
-           document.body.appendChild( peerStreams[0].mediaElement);
-           // setPeerSreamId(peerStreams[0].id);
-        }else{
-            alert('Not Found');
+        let video = document.createElement('video');
+
+        try {
+            video.setAttributeNode(document.createAttribute('autoplay'));
+            video.setAttributeNode(document.createAttribute('playsinline'));
+        } catch (e) {
+            video.setAttribute('autoplay', true);
+            video.setAttribute('playsinline', true);
         }
 
 
+        video.srcObject = event.stream;
+        document.body.appendChild(video);
     };
+
 
     const handleChange = (values) => {
         setParticularUser(values);
     };
 
     const call = (values) => {
-       /*connection.peers[particularUser[0].value].addStream({
-            audio: false,
-            video: true,
-            streamCallback: function(stream) {
-                console.log('Screen is successfully captured: ' + stream.getVideoTracks().length);
-            }
-        });*/
         connection.addStream({
             audio: true,
             video: true,
@@ -128,6 +121,8 @@ function Main() {
             }
         });
     };
+
+
 
     const stop = (values) => {
         /*let existing = document.getElementById(peerSreamId);
@@ -189,7 +184,7 @@ function Main() {
             Object.keys(connection.streamEvents).forEach(function (streamid) {
                 let event = connection.streamEvents[streamid];
                 if (event && event.stream) {
-                    event.stream.mute();
+                    // event.stream.mute();
                     console.log("Muted");
                 };
 
@@ -211,8 +206,8 @@ function Main() {
         <button onClick={sendToUser}>View</button>
         <br/><br/>
 
-        <button onClick={call}>Call</button><br/><br/>
-        <button onClick={stop}>Stop</button>
+        {/*<button onClick={call}>Call</button><br/><br/>*/}
+        {/*<button onClick={stop}>Stop</button>*/}
         <br/>
 
         <p>User List:</p>
