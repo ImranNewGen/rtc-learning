@@ -45,9 +45,8 @@ function Main() {
         connection.onstream = function(event) {
             let video = event.mediaElement;
             video.id = event.streamid;
-            video.width = 200;
-            video.height = 200;
-            console.log(video);
+            video.controls = false;
+            video.classList.add("mystyle");
             document.body.insertBefore(video, document.body.firstChild);
         };
     };
