@@ -13,6 +13,7 @@
   "dependencies": {
     "moment": "^2.27.0",
     "parcel-bundler": "^1.12.4",
+    "randomstring": "^1.1.5",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-helmet": "^6.1.0",
