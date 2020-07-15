@@ -4,6 +4,8 @@ import RTCMultiConnection from './RTCMultiConnection.js';
 import Helmet from "react-helmet";
 import moment from "moment";
 import Select from "react-select";
+import ReactAudioPlayer from 'react-audio-player';
+import ad from './nokia-1110-old-3504.mp3';
 
 const connection = new RTCMultiConnection();
 connection.socketURL = 'https://young-ridge-01369.herokuapp.com/';
@@ -146,6 +148,12 @@ function Main() {
                 <li key={i}>{item.sender} ==> {item.message}</li>
             ))}
         </ul>
+
+        <ReactAudioPlayer
+            src={ad}
+            autoPlay
+            controls
+        />
 
         <Helmet>
             <title>{userid}</title>

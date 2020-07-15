@@ -15,6 +15,7 @@
     "parcel-bundler": "^1.12.4",
     "randomstring": "^1.1.5",
     "react": "^16.13.1",
+    "react-audio-player": "^0.13.0",
     "react-dom": "^16.13.1",
     "react-helmet": "^6.1.0",
     "react-select": "^3.1.0",
