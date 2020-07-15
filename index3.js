@@ -22,6 +22,7 @@ function Main() {
         connection = new RTCMultiConnection();
         connection.socketURL = 'https://young-ridge-01369.herokuapp.com/';
         connection.enableLogs = false;
+        connection.autoCreateMediaElement = false;
         connection.sdpConstraints.mandatory = {
             OfferToReceiveAudio: true,
             OfferToReceiveVideo: true
@@ -43,10 +44,32 @@ function Main() {
         });
 
         connection.onstream = function(event) {
-            let video = event.mediaElement;
-            video.id = event.streamid;
-            video.controls = false;
-            video.classList.add("mystyle");
+            // let video = event.mediaElement;
+            // video.id = event.streamid;
+            // video.controls = false;
+            // video.classList.add("mystyle");
+            // document.body.insertBefore(video, document.body.firstChild);
+            console.log(event.mediaElement);
+
+            let video = document.createElement('video');
+            try {
+                video.setAttributeNode(document.createAttribute('autoplay'));
+                video.setAttributeNode(document.createAttribute('playsinline'));
+            } catch (e) {
+                video.setAttribute('autoplay', true);
+                video.setAttribute('playsinline', true);
+            }
+
+            if(event.type === 'local') {
+                video.volume = 0;
+                try {
+                    video.setAttributeNode(document.createAttribute('muted'));
+                } catch (e) {
+                    video.setAttribute('muted', true);
+                }
+            }
+            video.srcObject = event.stream;
+            connection.videosContainer.appendChild(video);
             document.body.insertBefore(video, document.body.firstChild);
         };
     };
