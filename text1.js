@@ -42,6 +42,8 @@ function Main() {
                 }]);
             }else if (event.data.type === 'SYSTEM') {
                 setEnableReceiveButton(false);
+                let audio = new Audio('https://nf1f8200-a.akamaihd.net/downloads/ringtones/files/mp3/nokia-1110-old-3504.mp3');
+                audio.play();
             } else {
 
                 alert('Message Error');
