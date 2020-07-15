@@ -42,10 +42,8 @@ function Main() {
                 }]);
             }else if (event.data.type === 'SYSTEM') {
                 setEnableReceiveButton(false);
-                let audio = new Audio('https://nf1f8200-a.akamaihd.net/downloads/ringtones/files/mp3/nokia-1110-old-3504.mp3');
-                audio.play();
+                document.getElementById("audioID").play();
             } else {
-
                 alert('Message Error');
             }
         };
@@ -109,7 +107,9 @@ function Main() {
             "toolbar=yes,scrollbars=yes,resizable=yes,top=500,left=500,width=400,height=400");
     };
 
+
     const receive = () => {
+        document.getElementById("audioID").pause();
         window.open("https://newgen.vercel.app/?roomid=say",
             "_blank",
             "toolbar=yes,scrollbars=yes,resizable=yes,top=500,left=500,width=400,height=400");
@@ -132,7 +132,6 @@ function Main() {
         <button onClick={call}>Call</button>
         <br/><br/>
         <button onClick={receive} disabled={enableReceiveButton}>Receive</button>
-
 
         <p>User List:</p>
         <ul>
