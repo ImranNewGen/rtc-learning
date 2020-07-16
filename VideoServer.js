@@ -80,6 +80,7 @@ const VideoServer = props => {
         });
         // close socket.io connection
         connection.closeSocket();
+        window.close();
     };
 
     return <>
