@@ -5,6 +5,7 @@ import moment from "moment";
 const VideoServer = props => {
 
     let connection;
+    const [initator, setInitator] = React.useState(false);
 
     React.useEffect(() => {
 
@@ -94,14 +95,7 @@ const VideoServer = props => {
 
         // https://www.rtcmulticonnection.org/docs/iceServers/
         // use your own TURN-server here!
-        /*connection.iceServers = [{
-            'urls': [
-                'stun:stun.l.google.com:19302',
-                'stun:stun1.l.google.com:19302',
-                'stun:stun2.l.google.com:19302',
-                'stun:stun.l.google.com:19302?transport=udp',
-            ]
-        }];*/
+        
         connection.iceServers = [];
 
         connection.iceServers.push({
@@ -125,6 +119,12 @@ const VideoServer = props => {
         
 
         connection.openOrJoin(props.room, (isRoomExist, roomid, error) => {
+            if (connection.isInitiator === true) {
+                setInitator(true);
+            } else {
+                setInitator(false);
+            }
+
             if (error) {
                 alert(error);
             }
@@ -173,6 +173,7 @@ const VideoServer = props => {
             }
         };
 
+
     }, []);
 
    
@@ -192,7 +193,7 @@ const VideoServer = props => {
     return <>
         <div className="content">
             <a onClick={rejectCall} className="fa fa-phone"/>                
-            <p>Calling...</p>
+            {initator && <p>Calling...</p>}
         </div>
     </>;
 };
