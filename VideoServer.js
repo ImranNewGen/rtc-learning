@@ -161,6 +161,7 @@ const VideoServer = props => {
             }
 
             video.srcObject = event.stream;
+            video.id = event.streamid;
             connection.videosContainer.appendChild(video);
             document.body.insertBefore(video, document.body.firstChild);
         };
