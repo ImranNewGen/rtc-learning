@@ -6,7 +6,8 @@
   "scripts": {
     "local": "parcel index.html",
     "build": "parcel build index.html --no-source-maps --out-dir prod",
-    "video": "parcel video.html"
+    "video": "parcel video.html",
+    "video-build": "parcel build video.html --no-source-maps --out-dir prod-video"
   },
   "keywords": [],
   "author": "",

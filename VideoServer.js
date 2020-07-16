@@ -66,10 +66,7 @@ const VideoServer = props => {
 
     }, []);
 
-    const receiveCall = () => {
-        alert('receiveCall');
-    };
-
+   
     const rejectCall = () => {
         connection.getAllParticipants().forEach(function(pid) {
             connection.disconnectWith(pid);
@@ -85,10 +82,7 @@ const VideoServer = props => {
 
     return <>
         <div className="content">
-            <div>
-                <a onClick={receiveCall} className="fa fa-phone"/>
-                <a onClick={rejectCall} className="fa fa-circle"/>
-            </div>
+            <a onClick={rejectCall} className="fa fa-phone"/>                
             <p>Calling...</p>
         </div>
     </>;

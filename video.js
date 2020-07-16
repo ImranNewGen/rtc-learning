@@ -11,7 +11,7 @@ const Main = () => {
     }, []);
 
     if (!Boolean(params.get('room'))) {
-        return <p>Invalid Room ...</p>;
+        return <p style={{color:"white"}}>Invalid Room ...</p>;
     }
 
     return <VideoServer room={params.get('room')}/>;
