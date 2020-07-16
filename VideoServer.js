@@ -17,7 +17,7 @@ const VideoServer = props => {
             OfferToReceiveAudio: true,
             OfferToReceiveVideo: true
         };
-        
+
 // STAR_FIX_VIDEO_AUTO_PAUSE_ISSUES
 // via: https://github.com/muaz-khan/RTCMultiConnection/issues/778#issuecomment-524853468
 var bitrates = 512;
@@ -131,12 +131,10 @@ connection.iceServers.push({
         });
 
         connection.onstream = function(event) {
-            // let video = event.mediaElement;
-            // video.id = event.streamid;
-            // video.controls = false;
-            // video.classList.add("mystyle");
-            // document.body.insertBefore(video, document.body.firstChild);
-            // console.log(event.mediaElement);
+            var existing = document.getElementById(event.streamid);
+            if(existing && existing.parentNode) {
+              existing.parentNode.removeChild(existing);
+            }
 
             let video = document.createElement('video');
             try {
