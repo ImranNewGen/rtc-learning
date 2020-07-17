@@ -4,7 +4,6 @@ import RTCMultiConnection from './RTCMultiConnection.js';
 import Helmet from "react-helmet";
 import moment from "moment";
 import Select from "react-select";
-import ReactAudioPlayer from 'react-audio-player';
 import ad from './nokia-1110-old-3504.mp3';
 
 const connection = new RTCMultiConnection();
@@ -44,7 +43,6 @@ function Main() {
                 }]);
             }else if (event.data.type === 'SYSTEM') {
                 setEnableReceiveButton(false);
-                document.getElementById("audioID").play();
             } else {
                 alert('Message Error');
             }
@@ -106,15 +104,13 @@ function Main() {
         connection.send(payload, particularUser[0].value);
         window.open("https://newgen.vercel.app/?roomid=say",
             "_blank",
-            "toolbar=yes,scrollbars=yes,resizable=yes,top=500,left=500,width=400,height=400");
+            "toolbar=yes,scrollbars=yes,resizable=yes,top=100,left=500,width=400,height=400");
     };
 
-
     const receive = () => {
-        document.getElementById("audioID").pause();
         window.open("https://newgen.vercel.app/?roomid=say",
             "_blank",
-            "toolbar=yes,scrollbars=yes,resizable=yes,top=500,left=500,width=400,height=400");
+            "toolbar=yes,scrollbars=yes,resizable=yes,top=100,left=500,width=400,height=400");
     };
 
     return <div>
@@ -148,12 +144,6 @@ function Main() {
                 <li key={i}>{item.sender} ==> {item.message}</li>
             ))}
         </ul>
-
-        <ReactAudioPlayer
-            src={ad}
-            autoPlay
-            controls
-        />
 
         <Helmet>
             <title>{userid}</title>

@@ -91,8 +91,6 @@ const VideoServer = props => {
 
             return sdp;
         };
-        // END_FIX_VIDEO_AUTO_PAUSE_ISSUES
-
         // https://www.rtcmulticonnection.org/docs/iceServers/
         // use your own TURN-server here!
         
@@ -158,6 +156,7 @@ const VideoServer = props => {
 
             if (event.type === 'remote') {
                 video.classList.add("remote");
+                setInitator(false);
             }
 
             video.srcObject = event.stream;
@@ -178,16 +177,19 @@ const VideoServer = props => {
 
    
     const rejectCall = () => {
-        connection.getAllParticipants().forEach(function(pid) {
-            connection.disconnectWith(pid);
-        });
-        // stop all local cameras
-        connection.attachStreams.forEach(function(localStream) {
-            localStream.stop();
-        });
-        // close socket.io connection
-        connection.closeSocket();
-        window.close();
+        try {
+            connection.getAllParticipants().forEach(pid => {
+                connection.disconnectWith(pid);
+            });
+            connection.attachStreams.forEach(localStream => {
+                localStream.stop();
+            });
+            connection.closeSocket();
+        }catch (e) {
+            console.log("No Participants Found");
+        }finally {
+            window.close();
+        }
     };
 
     return <>
