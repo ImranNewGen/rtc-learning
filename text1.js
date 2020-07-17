@@ -4,6 +4,9 @@ import RTCMultiConnection from './RTCMultiConnection.js';
 import Helmet from "react-helmet";
 import moment from "moment";
 import Select from "react-select";
+var randomstring = require("randomstring");
+
+
 import ad from './nokia-1110-old-3504.mp3';
 
 const connection = new RTCMultiConnection();
@@ -28,6 +31,7 @@ function Main() {
     const [userlist, setUserlist] = React.useState([]);
 
     const [enableReceiveButton, setEnableReceiveButton] = React.useState(true);
+    const [receiverRoom, setReceiverRoom] = React.useState();
 
     React.useEffect(() => {
 
@@ -43,6 +47,7 @@ function Main() {
                 }]);
             }else if (event.data.type === 'SYSTEM') {
                 setEnableReceiveButton(false);
+                setReceiverRoom(event.data.body);
             } else {
                 alert('Message Error');
             }
@@ -96,21 +101,25 @@ function Main() {
 
 
     const call = () => {
+        let roomNo = randomstring.generate();
         let payload = {
             type: 'SYSTEM',
-            body: 'Hay I am calling u'
+            body: roomNo
         };
-        console.log('going to call...' + particularUser[0].value);
+        // console.log('going to call...' + particularUser[0].value);
         connection.send(payload, particularUser[0].value);
-        window.open("https://newgen.vercel.app/?roomid=say",
+
+        window.open("https://imrannewgen.github.io/rtc-learning/prod-video/video.html?room=" + roomNo,
             "_blank",
-            "toolbar=yes,scrollbars=yes,resizable=yes,top=100,left=500,width=400,height=400");
+            "toolbar=yes,scrollbars=yes,resizable=yes,top=50,left=400,width=500,height=370");
+
     };
 
     const receive = () => {
-        window.open("https://newgen.vercel.app/?roomid=say",
+        setEnableReceiveButton(true);
+        window.open("https://imrannewgen.github.io/rtc-learning/prod-video/video.html?room=" + receiverRoom,
             "_blank",
-            "toolbar=yes,scrollbars=yes,resizable=yes,top=100,left=500,width=400,height=400");
+            "toolbar=yes,scrollbars=yes,resizable=yes,top=50,left=400,width=500,height=370");
     };
 
     return <div>
@@ -129,7 +138,7 @@ function Main() {
         <br/><br/>
         <button onClick={call}>Call</button>
         <br/><br/>
-        <button onClick={receive} disabled={enableReceiveButton}>Receive</button>
+        <button onClick={receive} disabled={enableReceiveButton}>Receive {receiverRoom}</button>
 
         <p>User List:</p>
         <ul>

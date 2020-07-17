@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import VideoServer from "./VideoServer";
+import './video.css';
 
 const params = new URLSearchParams(window.location.search);
 
