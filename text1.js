@@ -4,10 +4,9 @@ import RTCMultiConnection from './RTCMultiConnection.js';
 import Helmet from "react-helmet";
 import moment from "moment";
 import Select from "react-select";
+
 var randomstring = require("randomstring");
 
-
-import ad from './nokia-1110-old-3504.mp3';
 
 const connection = new RTCMultiConnection();
 connection.socketURL = 'https://young-ridge-01369.herokuapp.com/';
